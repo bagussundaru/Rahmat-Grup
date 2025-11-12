@@ -1,8 +1,8 @@
 import React, { useState, useEffect, useRef } from 'react';
 import Input from '../../../components/ui/Input';
 import Button from '../../../components/ui/Button';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
+import Icon from "components/ui/AppIcon";
+import Image from "components/ui/AppImage";
 import { Product } from '../types';
 
 interface ProductSearchProps {

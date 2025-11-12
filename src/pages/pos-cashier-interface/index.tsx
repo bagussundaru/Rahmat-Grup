@@ -10,7 +10,7 @@ import PaymentPanel from './components/PaymentPanel';
 import QRISModal from './components/QRISModal';
 import ReceiptPrint from './components/ReceiptPrint';
 import Button from '../../components/ui/Button';
-import Icon from '../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { Product, CartItem, Transaction, PaymentState } from './types';
 
 const POSCashierInterface = () => {

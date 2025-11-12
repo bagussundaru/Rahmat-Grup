@@ -1,6 +1,6 @@
 import React, { useState, useRef, useEffect } from 'react';
-import Icon from '../AppIcon';
-import Image from '../AppImage';
+import Icon from "components/ui/AppIcon";
+import Image from "components/ui/AppImage";
 
 interface User {
   name: string;

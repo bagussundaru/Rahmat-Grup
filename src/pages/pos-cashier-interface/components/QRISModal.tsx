@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import Button from '../../../components/ui/Button';
-import Icon from '../../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { QRISPayment } from '../types';
 
 interface QRISModalProps {

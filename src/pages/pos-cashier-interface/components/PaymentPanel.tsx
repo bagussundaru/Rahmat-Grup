@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
-import Icon from '../../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { PaymentState, Transaction } from '../types';
 
 interface PaymentPanelProps {

@@ -1,7 +1,9 @@
 
-# React
+# Rahmat Grup - POS System
 
-A modern React-based project utilizing the latest frontend technologies and tools for building responsive web applications.
+A modern React-based Point of Sale (POS) system with inventory management, sales dashboard, and transaction tracking.
+
+**Live Demo:** https://rahmat-grup.web.id
 
 ## 🚀 Features
 
@@ -161,18 +163,116 @@ The app is built with responsive design using Tailwind CSS breakpoints.
 
 ## 📦 Deployment
 
-Build the application for production:
+### Build for Production
 
 ```bash
+npm run build
+```
 
+This creates an optimized production build in the `dist/` directory.
+
+### Production Deployment
+
+For complete deployment instructions to **rahmat-grup.web.id** on **103.126.116.175**, see [DEPLOYMENT.md](./DEPLOYMENT.md).
+
+#### Quick Deploy (Automated)
+
+```bash
+# On your server (with sudo access)
+sudo curl -fsSL https://raw.githubusercontent.com/bagussundaru/Rahmat-Grup/main/scripts/deploy.sh | bash
+```
+
+#### Manual Deploy
+
+1. **SSH to server:**
+   ```bash
+   ssh username@103.126.116.175
+   ```
+
+2. **Clone and build:**
+   ```bash
+   sudo mkdir -p /var/www/rahmat-grup
+   cd /var/www/rahmat-grup
+   sudo git clone https://github.com/bagussundaru/Rahmat-Grup.git source
+   cd source
+   npm ci && npm run build
+   ```
+
+3. **Configure Nginx & SSL:** See [DEPLOYMENT.md](./DEPLOYMENT.md) for detailed steps.
+
+#### Automated CI/CD with GitHub Actions
+
+The repository includes a GitHub Actions workflow (`.github/workflows/deploy.yml`) that:
+- Builds on every push to `main`
+- Deploys automatically to your server
+- Creates backups before deployment
+- Verifies Nginx and SSL configuration
+
+**Setup:**
+1. Go to Settings → Secrets and variables → Actions
+2. Add secrets:
+   - `SERVER_HOST`: 103.126.116.175
+   - `SERVER_USER`: your SSH username
+   - `SERVER_SSH_KEY`: your SSH private key
+
+## 🔐 Security
+
+- HTTPS enforced with Let's Encrypt SSL
+- HTTP → HTTPS automatic redirect
+- Security headers configured
+- Gzip compression enabled
+- Static asset caching optimized
+- Sensitive data never committed to repo
+
+## 🛠️ Development
+
+### Local Setup
+
+```bash
+# Clone repository
+git clone https://github.com/bagussundaru/Rahmat-Grup.git
+cd Rahmat-Grup
+
+# Install dependencies
+npm ci
+
+# Start development server (http://localhost:5173)
+npm start
+
+# Build for production
 npm run build
 
+# Preview production build
+npm run serve
 ```
+
+### Environment Variables
+
+Copy `.env.example` to `.env.development` and configure:
+
+```env
+VITE_API_BASE_URL=http://localhost:3000
+VITE_APP_NAME=Rahmat Grup POS
+VITE_ENABLE_DEBUG=true
+```
+
+See [.env.example](./.env.example) for all options.
+
+## 📊 Pages & Features
+
+- **Sales Dashboard** - Real-time sales metrics and charts
+- **POS Cashier** - Point of sale interface with shopping cart
+- **Inventory Reports** - Stock levels, movement history, reorder recommendations
+- **Product Management** - Add, edit, bulk actions for products
+- **Transaction History** - Complete transaction logs with export
 
 ## 🙏 Acknowledgments
 
-- Built with [Rocket.new](https://rocket.new)
-- Powered by React and Vite
-- Styled with Tailwind CSS
+- Built with [React](https://react.dev) and [Vite](https://vitejs.dev)
+- Styled with [Tailwind CSS](https://tailwindcss.com)
+- UI Components from [Radix UI](https://www.radix-ui.com)
+- Icons from [Lucide React](https://lucide.dev)
+- Charts from [Recharts](https://recharts.org)
+- Data visualization with [D3.js](https://d3js.org)
 
 Built with ❤️ on Rocket.new

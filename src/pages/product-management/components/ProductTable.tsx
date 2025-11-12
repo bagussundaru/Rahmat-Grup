@@ -1,6 +1,6 @@
 import React, { useState, useMemo } from 'react';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
+import Icon from "components/ui/AppIcon";
+import Image from "components/ui/AppImage";
 import Button from '../../../components/ui/Button';
 import { Checkbox } from '../../../components/ui/Checkbox';
 import { Product, SortConfig, ProductTableColumn } from '../types';

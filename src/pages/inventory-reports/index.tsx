@@ -11,7 +11,7 @@ import StockMovementHistory from './components/StockMovementHistory';
 import ReorderRecommendations from './components/ReorderRecommendations';
 import ExportControls from './components/ExportControls';
 
-import Icon from '../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import {
   Product,
   StockMovement,

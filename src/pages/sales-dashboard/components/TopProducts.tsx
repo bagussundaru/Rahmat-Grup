@@ -1,6 +1,6 @@
 import React from 'react';
-import Image from '../../../components/AppImage';
-import Icon from '../../../components/AppIcon';
+import Image from "components/ui/AppImage";
+import Icon from "components/ui/AppIcon";
 import { TopProduct } from '../types';
 
 interface TopProductsProps {

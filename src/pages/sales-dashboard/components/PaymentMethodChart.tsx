@@ -1,6 +1,6 @@
 import React from 'react';
 import { PieChart, Pie, Cell, ResponsiveContainer, Tooltip } from 'recharts';
-import Icon from '../../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { PaymentMethodData } from '../types';
 
 interface PaymentMethodChartProps {

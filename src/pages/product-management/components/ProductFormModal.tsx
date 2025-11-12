@@ -3,8 +3,8 @@ import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Select from '../../../components/ui/Select';
 import { Checkbox } from '../../../components/ui/Checkbox';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
+import Icon from "components/ui/AppIcon";
+import Image from "components/ui/AppImage";
 import { Product, ProductFormData, ProductCategory, BarcodeInput } from '../types';
 
 interface ProductFormModalProps {

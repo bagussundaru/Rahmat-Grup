@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
+import RahmatLogo from '../RahmatLogo';
 import Icon from '../AppIcon';
 import UserProfileDropdown from './UserProfileDropdown';
 

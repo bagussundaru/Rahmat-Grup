@@ -1,6 +1,6 @@
 import React from 'react';
 import { useLocation, useNavigate } from 'react-router-dom';
-import Icon from '../AppIcon';
+import Icon from "components/ui/AppIcon";
 
 interface BreadcrumbItem {
   label: string;

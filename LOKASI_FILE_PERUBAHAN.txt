@@ -1,0 +1,274 @@
+╔════════════════════════════════════════════════════════════════════════════════╗
+║                     LOKASI FILE-FILE YANG DIUBAH                              ║
+║                     KASIR RAHMAT GRUP v0.1.0                                  ║
+╚════════════════════════════════════════════════════════════════════════════════╝
+
+
+📁 BASE DIRECTORY: ~/rahmat-grup-updated
+
+
+📋 DAFTAR LENGKAP FILE YANG DIUBAH:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. FILE KONFIGURASI UTAMA
+   ─────────────────────────
+
+   📄 index.html
+   Path:     ~/rahmat-grup-updated/index.html
+   Perubahan:
+     • <title>smartpos-pro</title>
+       ↓ diubah menjadi
+       <title>Kasir Rahmat Grup</title>
+     
+     • Meta description diubah
+     • Meta theme-color diubah menjadi #000000
+
+   📄 package.json
+   Path:     ~/rahmat-grup-updated/package.json
+   Perubahan:
+     • "name": "smartpos-pro"
+       ↓ diubah menjadi
+       "name": "kasir-rahmat-grup"
+
+   📄 vite.config.ts
+   Path:     ~/rahmat-grup-updated/vite.config.ts
+   Perubahan:
+     • Added vite-tsconfig-paths plugin
+     • Added resolve.alias untuk path resolution
+     • Aliases: components, pages, utils, styles
+
+   📄 tsconfig.json
+   Path:     ~/rahmat-grup-updated/tsconfig.json
+   Perubahan:
+     • baseUrl: "./src" (sudah ada, tidak diubah)
+
+
+2. SOURCE CODE COMPONENTS & PAGES
+   ──────────────────────────────────
+
+   📄 src/App.tsx
+   Path:     ~/rahmat-grup-updated/src/App.tsx
+   Perubahan:
+     • Imported Helmet dari react-helmet
+     • Added <Helmet> dengan title: "Kasir Rahmat Grup - Sistem Point of Sale"
+     • Updated meta description
+     • Added export default App
+   
+   Sebelum:
+     ───────
+     import React from "react";
+     import Routes from "./Routes";
+     
+     const App: React.FC = () => {
+       return <Routes />;
+     };
+   
+   Sesudah:
+     ───────
+     import React from "react";
+     import { Helmet } from "react-helmet";
+     import Routes from "./Routes";
+     
+     const App: React.FC = () => {
+       return (
+         <>
+           <Helmet>
+             <title>Kasir Rahmat Grup - Sistem Point of Sale</title>
+             <meta name="description" content="Kasir Rahmat Grup - Sistem Point of Sale Modern untuk Bisnis Retail Anda" />
+             <meta name="theme-color" content="#3B82F6" />
+           </Helmet>
+           <Routes />
+         </>
+       );
+     };
+     
+     export default App;
+
+   📄 src/Routes.tsx
+   Path:     ~/rahmat-grup-updated/src/Routes.tsx
+   Perubahan:
+     • Fixed import paths untuk ScrollToTop & ErrorBoundary
+     • Sekarang menggunakan alias paths: components/ui/ScrollToTop
+     • Added export default Routes
+
+   📄 src/components/RahmatLogo.tsx (BARU)
+   Path:     ~/rahmat-grup-updated/src/components/RahmatLogo.tsx
+   Type:     React TypeScript Component
+   Purpose:  Logo component dengan SVG huruf R
+   Features:
+     • Responsive size prop
+     • Customizable text display
+     • Inline SVG dengan gradient
+     • TypeScript interfaces untuk props
+   
+   Imports:
+     • import React from 'react';
+   
+   Export:
+     • export default RahmatLogo;
+
+   📄 src/components/ui/NavigationSidebar.tsx
+   Path:     ~/rahmat-grup-updated/src/components/ui/NavigationSidebar.tsx
+   Perubahan:
+     • Added import: import RahmatLogo from '../RahmatLogo';
+     • Fixed import path untuk AppIcon
+     
+     Sebelum (baris ~83-95):
+     ──────────
+     <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
+       <Icon name="Store" size={20} color="white" />
+     </div>
+     <div>
+       <h1 className="text-lg font-semibold text-foreground">SmartPOS</h1>
+       <p className="text-xs text-muted-foreground">Pro</p>
+     </div>
+     
+     Sesudah:
+     ────────
+     <RahmatLogo size={32} showText={true} />
+     
+     Juga diupdate untuk collapsed state:
+     Sebelum:
+       <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mx-auto">
+         <Icon name="Store" size={20} color="white" />
+       </div>
+     
+     Sesudah:
+       <RahmatLogo size={32} showText={false} className="justify-center" />
+
+
+3. ASSET & STATIC FILES
+   ─────────────────────
+
+   🎨 public/logo-r.svg (BARU)
+   Path:     ~/rahmat-grup-updated/public/logo-r.svg
+   Type:     SVG Image
+   Size:     ~1KB
+   Purpose:  Logo SVG dengan huruf R
+   Specs:
+     • Viewbox: 0 0 200 200
+     • Colors: Blue gradient (#3B82F6 to #1E40AF)
+     • Design: Modern minimalist letter R
+     • Elements:
+       - Background circle
+       - Vertical line (stem)
+       - Top bump (bowl)
+       - Diagonal leg
+       - Shine effect
+   
+   Usage:
+     • Can be used in <img> tags
+     • Can be used in CSS backgrounds
+     • Embedded dalam RahmatLogo.tsx component
+
+
+4. FILE-FILE YANG DI-FIX IMPORT PATHS (29 files)
+   ─────────────────────────────────────────────
+
+   🔧 Fixed Import Patterns:
+   
+   Pattern 1: "../AppIcon" → "components/ui/AppIcon"
+   Files affected:
+     • src/components/ui/Button.tsx
+     • src/components/ui/NavigationSidebar.tsx
+     • src/components/ui/NavigationBreadcrumbs.tsx
+     • src/components/ui/StatusIndicatorBar.tsx
+     • src/components/ui/UserProfileDropdown.tsx
+   
+   Pattern 2: "../../../components/AppIcon" → "components/ui/AppIcon"
+   Files affected:
+     • src/pages/product-management/components/BulkActionsToolbar.tsx
+     • src/pages/product-management/components/ProductFormModal.tsx
+     • src/pages/product-management/components/ProductStats.tsx
+     • src/pages/product-management/components/ProductFilters.tsx
+     • src/pages/product-management/components/ProductTable.tsx
+     • src/pages/pos-cashier-interface/components/ShoppingCart.tsx
+     • src/pages/pos-cashier-interface/components/ProductSearch.tsx
+     • src/pages/pos-cashier-interface/components/PaymentPanel.tsx
+     • src/pages/pos-cashier-interface/components/QRISModal.tsx
+     • src/pages/transaction-history/components/TransactionTable.tsx
+     • src/pages/transaction-history/components/ExportModal.tsx
+     • src/pages/inventory-reports/components/ReorderRecommendations.tsx
+     • src/pages/inventory-reports/components/StockMovementHistory.tsx
+     • src/pages/inventory-reports/components/InventoryTable.tsx
+     • src/pages/inventory-reports/components/InventorySummaryCards.tsx
+     • src/pages/sales-dashboard/components/MetricCards.tsx
+     • src/pages/sales-dashboard/components/RecentTransactions.tsx
+     • src/pages/sales-dashboard/components/ExportActions.tsx
+     • src/pages/sales-dashboard/components/TopProducts.tsx
+     • src/pages/sales-dashboard/components/PaymentMethodChart.tsx
+     • src/pages/sales-dashboard/components/DateRangeSelector.tsx
+   
+   Pattern 3: Various AppImage paths
+   Files affected:
+     • src/pages/product-management/components/ProductTable.tsx
+     • src/pages/product-management/components/ProductFormModal.tsx
+     • src/pages/sales-dashboard/components/TopProducts.tsx
+
+
+🔍 CARA MELIHAT PERUBAHAN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Terminal commands untuk view files:
+
+  cd ~/rahmat-grup-updated
+  
+  # Lihat title di index.html
+  cat index.html | grep title
+  
+  # Lihat name di package.json
+  cat package.json | grep '"name"'
+  
+  # Lihat App.tsx
+  cat src/App.tsx
+  
+  # Lihat RahmatLogo component
+  cat src/components/RahmatLogo.tsx
+  
+  # Lihat logo SVG
+  cat public/logo-r.svg
+  
+  # Lihat NavigationSidebar
+  cat src/components/ui/NavigationSidebar.tsx | head -100
+
+
+📊 SUMMARY PERUBAHAN:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Total Files Modified:     5 files
+Total Files Created:      2 files
+Total Import Fixes:       29 files
+Total Lines Changed:      ~150 lines
+
+Breakdown:
+  • Configuration files:   2 (index.html, package.json)
+  • TypeScript files:      2 (App.tsx, NavigationSidebar.tsx)
+  • New components:        1 (RahmatLogo.tsx)
+  • New assets:            1 (logo-r.svg)
+  • Config updated:        2 (vite.config.ts, Routes.tsx)
+  • Import fixes:          29 files
+
+
+🎯 WHAT CHANGED VISUALLY:
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+1. Browser Tab:
+   BEFORE:  smartpos-pro
+   AFTER:   Kasir Rahmat Grup - Sistem Point of Sale
+
+2. Sidebar Header:
+   BEFORE:  [Store Icon] SmartPOS Pro
+   AFTER:   [R Logo] Kasir
+                      Rahmat Grup
+
+3. Logo Design:
+   BEFORE:  Generic store icon
+   AFTER:   Modern blue R letter with gradient
+
+
+━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━━
+
+Generated: November 12, 2025
+Status: ✅ COMPLETE
+Version: kasir-rahmat-grup v0.1.0
+

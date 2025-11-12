@@ -1,7 +1,7 @@
 import React from "react";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
-import ScrollToTop from "components/ScrollToTop";
-import ErrorBoundary from "components/ErrorBoundary";
+import ScrollToTop from "components/ui/ScrollToTop";
+import ErrorBoundary from "components/ui/ErrorBoundary";
 import NotFound from "pages/NotFound";
 import InventoryReports from './pages/inventory-reports';
 import TransactionHistoryPage from './pages/transaction-history';

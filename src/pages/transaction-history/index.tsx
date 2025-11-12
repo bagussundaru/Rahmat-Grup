@@ -9,7 +9,7 @@ import TransactionDetailModal from './components/TransactionDetailModal';
 import PaginationControls from './components/PaginationControls';
 import ExportModal from './components/ExportModal';
 
-import Icon from '../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { 
   Transaction, 
   TransactionFilters, 

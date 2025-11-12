@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from '../../../components/ui/Button';
 import Select from '../../../components/ui/Select';
 import Input from '../../../components/ui/Input';
-import Icon from '../../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { BulkAction, ProductCategory } from '../types';
 
 interface BulkActionsToolbarProps {

@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import Button from '../../../components/ui/Button';
-import Icon from '../../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { DateRange } from '../types';
 
 interface ExportActionsProps {

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import { Checkbox } from '../../../components/ui/Checkbox';
-import Icon from '../../../components/AppIcon';
+import Icon from "components/ui/AppIcon";
 import { ExportOptions } from '../types';
 
 interface ExportModalProps {
