@@ -41,7 +41,7 @@ export interface ButtonProps
     VariantProps<typeof buttonVariants> {
     asChild?: boolean;
     loading?: boolean;
-    iconName?: keyof typeof LucideIcons | null;
+    iconName?: string | keyof typeof LucideIcons | null;
     iconPosition?: 'left' | 'right';
     iconSize?: number | null;
     fullWidth?: boolean;

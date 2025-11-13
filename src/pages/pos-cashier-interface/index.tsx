@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { useNavigate } from 'react-router-dom';
 import { Helmet } from 'react-helmet';
 import NavigationSidebar from '../../components/ui/NavigationSidebar';
 import NavigationBreadcrumbs from '../../components/ui/NavigationBreadcrumbs';
@@ -6,14 +7,28 @@ import QuickActionToolbar from '../../components/ui/QuickActionToolbar';
 import StatusIndicatorBar from '../../components/ui/StatusIndicatorBar';
 import ShoppingCart from './components/ShoppingCart';
 import ProductSearch from './components/ProductSearch';
+import PopulerProductsCarousel from './components/PopulerProductsCarousel';
 import PaymentPanel from './components/PaymentPanel';
 import QRISModal from './components/QRISModal';
 import ReceiptPrint from './components/ReceiptPrint';
 import Button from '../../components/ui/Button';
 import Icon from "components/ui/AppIcon";
 import { Product, CartItem, Transaction, PaymentState } from './types';
+import { showToast } from '../../utils/notify';
+import { getSettings } from '../../utils/settings';
+import ErrorDialog from '../../components/ui/ErrorDialog';
+
+type QuickAction = {
+  label: string;
+  icon: string;
+  onClick: () => void;
+  variant?: 'default' | 'outline' | 'secondary' | 'success' | 'warning' | 'destructive';
+  shortcut?: string;
+  disabled?: boolean;
+};
 
 const POSCashierInterface = () => {
+  const navigate = useNavigate();
   const [sidebarCollapsed, setSidebarCollapsed] = useState(false);
   const [cartItems, setCartItems] = useState<CartItem[]>([]);
   const [currentTransaction, setCurrentTransaction] = useState<Transaction | null>(null);
@@ -21,6 +36,7 @@ const POSCashierInterface = () => {
   const [showReceipt, setShowReceipt] = useState(false);
   const [isProcessingPayment, setIsProcessingPayment] = useState(false);
   const [isBarcodeScannerActive, setIsBarcodeScannerActive] = useState(true);
+  const [errorDialog, setErrorDialog] = useState<{open: boolean; title: string; code?: string; message: string; suggestion?: string}>({open: false, title: '', message: ''});
   const [lastScanTime, setLastScanTime] = useState<number>(0);
   const scanBufferRef = useRef<string>('');
   const scanTimeoutRef = useRef<NodeJS.Timeout | null>(null);
@@ -90,8 +106,15 @@ const POSCashierInterface = () => {
     }
   ];
 
-  // Enhanced barcode scanner detection
+  // Enhanced barcode scanner detection & quick add shortcuts
   useEffect(() => {
+    const clockEl = document.getElementById('pos-clock');
+    const tick = () => {
+      if (clockEl) clockEl.textContent = new Date().toLocaleString('id-ID');
+    };
+    tick();
+    const interval = setInterval(tick, 1000);
+    
     const handleGlobalKeypress = (event: KeyboardEvent) => {
       if (!isBarcodeScannerActive) return;
 
@@ -139,6 +162,13 @@ const POSCashierInterface = () => {
             keySequenceRef.current = [];
           }, 200);
         }
+
+        // Quick add 1-9 shortcut (when not typing)
+        if (!isInInput && /^[1-9]$/.test(event.key)) {
+          const idx = Number(event.key) - 1;
+          const product = mockProducts[idx];
+          if (product) handleAddToCart(product);
+        }
       }
     };
 
@@ -149,40 +179,23 @@ const POSCashierInterface = () => {
       if (scanTimeoutRef.current) {
         clearTimeout(scanTimeoutRef.current);
       }
+      clearInterval(interval);
     };
   }, [isBarcodeScannerActive]);
 
   // Calculate totals with better precision
   const subtotal = cartItems.reduce((sum, item) => sum + item.subtotal, 0);
-  const discount = 0; // Can be implemented later
-  const tax = Math.round(subtotal * 0.11); // 11% PPN
+  const posSettings = getSettings();
+  const discountPercent = posSettings.discountPercent ?? 0;
+  const taxRate = 0; // retail: no tax
+  const discount = Math.floor(subtotal * (discountPercent / 100));
+  const taxableBase = Math.max(0, subtotal - discount);
+  const tax = 0;
   const total = subtotal - discount + tax;
 
   // Show notification helper
   const showNotification = (message: string, type: 'success' | 'error' | 'info' = 'info') => {
-    const notification = document.createElement('div');
-    const bgClass = type === 'success' ? 'bg-success text-success-foreground' :
-                   type === 'error' ? 'bg-destructive text-destructive-foreground' :
-                   'bg-primary text-primary-foreground';
-    
-    notification.className = `fixed top-4 right-4 ${bgClass} px-6 py-3 rounded-lg shadow-elevation-3 z-50 animate-in slide-in-from-right-2`;
-    notification.innerHTML = `
-      <div class="flex items-center space-x-2">
-        <div class="w-2 h-2 rounded-full bg-current animate-pulse"></div>
-        <span class="font-medium">${message}</span>
-      </div>
-    `;
-    
-    document.body.appendChild(notification);
-    
-    setTimeout(() => {
-      notification.style.animation = 'slide-out-to-right-2 0.2s ease-in forwards';
-      setTimeout(() => {
-        if (document.body.contains(notification)) {
-          document.body.removeChild(notification);
-        }
-      }, 200);
-    }, 3000);
+    showToast(message, type as any);
   };
 
   // Enhanced barcode handling with better feedback
@@ -201,6 +214,7 @@ const POSCashierInterface = () => {
     if (product) {
       if (product.stock === 0) {
         showNotification(`${product.name} - Stok habis!`, 'error');
+        setErrorDialog({open: true, title: 'Stok Habis', code: 'INV-OUT', message: `${product.name} tidak tersedia.`, suggestion: 'Silakan pilih produk lain atau lakukan restok.'});
         return;
       }
       
@@ -217,6 +231,7 @@ const POSCashierInterface = () => {
       }
     } else {
       showNotification(`Produk tidak ditemukan: ${cleanBarcode}`, 'error');
+      setErrorDialog({open: true, title: 'Produk Tidak Ditemukan', code: 'SCAN-NF', message: `Barcode/SKU: ${cleanBarcode}`, suggestion: 'Periksa barcode atau cari produk secara manual.'});
       console.log('Available barcodes:', mockProducts.map(p => p.barcode));
     }
   };
@@ -363,15 +378,16 @@ const POSCashierInterface = () => {
     const qrisPaymentData: PaymentState = {
       method: 'qris',
       cashAmount: 0,
-      change: 0
+      change: 0,
+      isProcessing: false
     };
     handleProcessPayment(qrisPaymentData);
   };
 
   // Enhanced quick actions
-  const quickActions = [
+  const quickActions: QuickAction[] = [
     {
-      label: 'Transaksi Baru',
+      label: 'Transaksi',
       icon: 'Plus',
       onClick: () => {
         setCartItems([]);
@@ -379,8 +395,25 @@ const POSCashierInterface = () => {
         setShowReceipt(false);
         showNotification('Transaksi baru dimulai', 'info');
       },
-      variant: 'default' as const,
+      variant: 'default',
       shortcut: 'F1'
+    },
+    {
+      label: 'Test Transaksi',
+      icon: 'CheckCircle',
+      onClick: () => {
+        const sample = mockProducts.slice(0, 3);
+        const items: CartItem[] = sample.map((p, i) => ({
+          id: `${p.id}-${Date.now()}-${i}`,
+          product: p,
+          quantity: 1,
+          subtotal: p.price,
+        }));
+        setCartItems(items);
+        showNotification('3 produk dimasukkan untuk tes transaksi', 'success');
+      },
+      variant: 'success',
+      shortcut: 'F3'
     },
     {
       label: isBarcodeScannerActive ? 'Scanner: ON' : 'Scanner: OFF',
@@ -392,7 +425,7 @@ const POSCashierInterface = () => {
           'info'
         );
       },
-      variant: isBarcodeScannerActive ? 'default' : 'outline' as const,
+      variant: isBarcodeScannerActive ? 'default' : 'outline',
       shortcut: 'F2'
     },
     {
@@ -403,9 +436,10 @@ const POSCashierInterface = () => {
           handleClearCart();
         } else {
           showNotification('Keranjang sudah kosong', 'info');
+          setErrorDialog({open: true, title: 'Keranjang Kosong', code: 'CART-EMPTY', message: 'Tidak ada item di keranjang.', suggestion: 'Tambah produk terlebih dahulu.'});
         }
       },
-      variant: 'destructive' as const,
+      variant: 'destructive',
       shortcut: 'F9',
       disabled: cartItems.length === 0
     }
@@ -427,24 +461,42 @@ const POSCashierInterface = () => {
 
 
         {/* Main Content */}
-        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'ml-16' : 'ml-60'}`}>
+        <div className={`transition-all duration-300 ${sidebarCollapsed ? 'md:ml-16' : 'md:ml-60'} ml-0`}>
           {/* Header */}
-          <header className="bg-card border-b border-border p-4">
-            <div className="flex items-center justify-between mb-4">
-              <div>
+          <header className="bg-card border-b border-border p-4 sticky top-0 z-50">
+            <div className="flex flex-col gap-2 md:flex-row md:items-center md:justify-between mb-4">
+              <div className="space-y-1 flex items-center justify-between md:block">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  iconName="Home"
+                  className="md:hidden"
+                  onClick={() => {
+                    navigate('/');
+                  }}
+                >
+                  Beranda
+                </Button>
                 <NavigationBreadcrumbs />
-                <h1 className="text-2xl font-bold text-foreground mt-2">POS Kasir</h1>
-                <p className="text-muted-foreground">Interface kasir untuk transaksi penjualan</p>
+                <h1 className="text-2xl font-bold text-foreground mt-2">KASIR</h1>
+                <p className="text-muted-foreground">Transaksi</p>
+                <div className="text-xs text-muted-foreground mt-1 flex items-center space-x-2">
+                  <span>{getSettings().receipt.storeName}</span>
+                  <span>•</span>
+                  <span id="pos-clock"></span>
+                </div>
               </div>
-              <QuickActionToolbar customActions={quickActions} />
+              <div className="w-full md:w-auto">
+                <QuickActionToolbar customActions={quickActions} />
+              </div>
             </div>
           </header>
 
           {/* Main POS Interface */}
-          <main className="p-4">
-            <div className="grid grid-cols-1 lg:grid-cols-3 gap-6 h-[calc(100vh-200px)]">
+          <main className="p-2 md:p-4">
+            <div className="grid grid-cols-1 lg:grid-cols-3 gap-3 md:gap-4 lg:gap-6 md:min-h-[calc(100vh-200px)] pb-16">
               {/* Left Section - Shopping Cart */}
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-2 lg:order-1">
                 <ShoppingCart
                   items={cartItems}
                   subtotal={subtotal}
@@ -458,7 +510,8 @@ const POSCashierInterface = () => {
               </div>
 
               {/* Middle Section - Product Search */}
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-1 lg:order-2">
+                <PopulerProductsCarousel products={[...mockProducts].sort((a,b)=>b.stock-a.stock).slice(0,8)} onSelect={handleAddToCart} />
                 <ProductSearch
                   products={mockProducts}
                   onAddToCart={handleAddToCart}
@@ -467,7 +520,7 @@ const POSCashierInterface = () => {
               </div>
 
               {/* Right Section - Payment Panel */}
-              <div className="lg:col-span-1">
+              <div className="lg:col-span-1 order-3 lg:order-3">
                 <PaymentPanel
                   total={total}
                   onProcessPayment={handleProcessPayment}
@@ -481,6 +534,7 @@ const POSCashierInterface = () => {
 
           {/* Status Bar */}
           <StatusIndicatorBar className="fixed bottom-0 left-0 right-0" />
+          <ErrorDialog open={errorDialog.open} title={errorDialog.title} code={errorDialog.code} message={errorDialog.message} suggestion={errorDialog.suggestion} onClose={() => setErrorDialog(prev => ({...prev, open: false}))} />
         </div>
 
         {/* QRIS Modal */}
@@ -508,7 +562,7 @@ const POSCashierInterface = () => {
               </div>
               
               <div className="p-4">
-                <ReceiptPrint transaction={currentTransaction} />
+                <ReceiptPrint transaction={currentTransaction} storeName={getSettings().receipt.storeName} storeAddress={getSettings().receipt.storeAddress} storePhone={getSettings().receipt.storePhone} />
                 
                 <div className="flex space-x-3 mt-6">
                   <Button

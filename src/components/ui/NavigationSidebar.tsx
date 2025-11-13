@@ -9,7 +9,7 @@ interface NavigationSidebarProps {
   onToggleCollapse?: () => void;
   currentUser?: {
     name: string;
-    role: string;
+    role: 'kasir' | 'supervisor' | 'owner' | 'audit' | 'admin';
     avatar?: string;
   };
 }
@@ -25,13 +25,13 @@ interface MenuItem {
 const NavigationSidebar = ({ 
   isCollapsed = false, 
   onToggleCollapse,
-  currentUser = { name: 'Admin User', role: 'Administrator' }
+  currentUser = { name: 'Admin User', role: 'admin' }
 }: NavigationSidebarProps) => {
   const location = useLocation();
   const navigate = useNavigate();
   const [hoveredItem, setHoveredItem] = useState<string | null>(null);
 
-  const menuItems: MenuItem[] = [
+  const baseMenu: MenuItem[] = [
     {
       label: 'POS Kasir',
       path: '/pos-cashier-interface',
@@ -64,6 +64,19 @@ const NavigationSidebar = ({
     }
   ];
 
+  const applyRBAC = (items: MenuItem[]): MenuItem[] => {
+    const role = currentUser?.role || 'admin';
+    return items.filter((item) => {
+      if (role === 'kasir') return ['POS Kasir','Riwayat Transaksi'].includes(item.label);
+      if (role === 'audit') return ['Riwayat Transaksi','Laporan Inventori','Dashboard Penjualan'].includes(item.label);
+      if (role === 'supervisor') return ['POS Kasir','Manajemen Produk','Riwayat Transaksi','Laporan Inventori','Dashboard Penjualan'].includes(item.label);
+      if (role === 'owner' || role === 'admin') return true;
+      return true;
+    });
+  };
+
+  const menuItems: MenuItem[] = applyRBAC(baseMenu);
+
   const handleNavigation = (path: string) => {
     navigate(path);
   };
@@ -72,29 +85,31 @@ const NavigationSidebar = ({
     return location.pathname === path;
   };
 
+  const isSmallScreen = typeof window !== 'undefined' && window.innerWidth < 768;
+  const collapsed = isCollapsed || isSmallScreen;
+
   return (
     <nav className={`
       fixed left-0 top-0 h-full bg-card border-r border-border z-100 transition-all duration-300 ease-out
-      ${isCollapsed ? 'w-16' : 'w-60'}
+      ${collapsed ? 'w-16' : 'w-60'}
+      ${isSmallScreen ? 'hidden md:block' : ''}
     `}>
       <div className="flex flex-col h-full">
         {/* Header with Logo and Toggle */}
         <div className="flex items-center justify-between p-4 border-b border-border">
-          {!isCollapsed && (
+          {!collapsed && (
             <div className="flex items-center space-x-3">
-              <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center">
-                <Icon name="Store" size={20} color="white" />
-              </div>
+              <RahmatLogo size={32} showText={false} />
               <div>
-                <h1 className="text-lg font-semibold text-foreground">SmartPOS</h1>
-                <p className="text-xs text-muted-foreground">Pro</p>
+                <h1 className="text-lg font-semibold text-foreground">Kasir Rahmat Grup</h1>
+                <p className="text-xs text-muted-foreground">Staging</p>
               </div>
             </div>
           )}
           
-          {isCollapsed && (
-            <div className="w-8 h-8 bg-primary rounded-lg flex items-center justify-center mx-auto">
-              <Icon name="Store" size={20} color="white" />
+          {collapsed && (
+            <div className="mx-auto">
+              <RahmatLogo size={28} showText={false} />
             </div>
           )}
           

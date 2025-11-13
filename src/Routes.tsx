@@ -8,6 +8,7 @@ import TransactionHistoryPage from './pages/transaction-history';
 import ProductManagement from './pages/product-management';
 import SalesDashboard from './pages/sales-dashboard';
 import POSCashierInterface from './pages/pos-cashier-interface';
+import SettingsPage from './pages/settings';
 
 const Routes: React.FC = () => {
   return (
@@ -22,6 +23,7 @@ const Routes: React.FC = () => {
         <Route path="/product-management" element={<ProductManagement />} />
         <Route path="/sales-dashboard" element={<SalesDashboard />} />
         <Route path="/pos-cashier-interface" element={<POSCashierInterface />} />
+        <Route path="/settings" element={<SettingsPage />} />
         <Route path="*" element={<NotFound />} />
         </RouterRoutes>
       </ErrorBoundary>

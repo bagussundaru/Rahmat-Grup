@@ -26,12 +26,21 @@ const ExportControls = ({ onExport, selectedProductsCount }: ExportControlsProps
     setIsExportModalOpen(false);
   };
 
-  const handleQuickExport = (format: ExportOptions['format']) => {
-    onExport({
-      format,
-      includeMovements: false,
-      dateRange: { start: null, end: null }
-    });
+  const toCSV = () => {
+    const headers = ['ID','Nama','SKU','Kategori','Stok','Harga','Nilai'];
+    const rows = (window as any).__INVENTORY_PRODUCTS__ || [];
+    const csv = [headers.join(',')].concat(
+      rows.map((p: any) => [p.id, p.name, p.sku, p.category, p.currentStock, p.unitPrice, p.totalValue].join(','))
+    ).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `inventory-${new Date().toISOString().slice(0,10)}.csv`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
   };
 
   const formatDateForInput = (date: Date | null) => {
@@ -55,17 +64,17 @@ const ExportControls = ({ onExport, selectedProductsCount }: ExportControlsProps
       <Button
         variant="outline"
         size="sm"
-        onClick={() => handleQuickExport('excel')}
+        onClick={toCSV}
         iconName="FileSpreadsheet"
         iconPosition="left"
       >
-        Export Excel
+        Export CSV
       </Button>
 
       <Button
         variant="outline"
         size="sm"
-        onClick={() => handleQuickExport('pdf')}
+        onClick={() => window.print()}
         iconName="FileText"
         iconPosition="left"
       >

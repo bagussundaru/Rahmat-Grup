@@ -8,12 +8,18 @@ interface ReceiptPrintProps {
   storePhone?: string;
 }
 
+import { getSettings } from '../../../utils/settings';
+
 const ReceiptPrint = ({ 
   transaction, 
-  storeName = "SmartPOS Store",
-  storeAddress = "Jl. Raya Bisnis No. 123, Jakarta",
-  storePhone = "021-1234-5678"
+  storeName,
+  storeAddress,
+  storePhone
 }: ReceiptPrintProps) => {
+  const s = getSettings();
+  const headerName = storeName || s.receipt.storeName;
+  const headerAddress = storeAddress || s.receipt.storeAddress;
+  const headerPhone = storePhone || s.receipt.storePhone;
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -40,7 +46,7 @@ const ReceiptPrint = ({
   return (
     <>
       {/* Print Styles */}
-      <style jsx>{`
+      <style>{`
         @media print {
           body * {
             visibility: hidden;
@@ -95,9 +101,9 @@ const ReceiptPrint = ({
       <div className="receipt-print bg-white text-black p-4 max-w-xs mx-auto border border-gray-300">
         {/* Header */}
         <div className="receipt-header text-center mb-4">
-          <h1 className="text-lg font-bold">{storeName}</h1>
-          <p className="text-xs">{storeAddress}</p>
-          <p className="text-xs">Telp: {storePhone}</p>
+          <h1 className="text-lg font-bold">{headerName}</h1>
+          <p className="text-xs">{headerAddress}</p>
+          <p className="text-xs">Telp: {headerPhone}</p>
         </div>
 
         <div className="receipt-line"></div>
@@ -148,8 +154,8 @@ const ReceiptPrint = ({
             </div>
           )}
           <div className="flex justify-between">
-            <span>Pajak (11%):</span>
-            <span>{formatCurrency(transaction.tax)}</span>
+            <span>Pajak (0%):</span>
+            <span>{formatCurrency(0)}</span>
           </div>
           <div className="receipt-line"></div>
           <div className="flex justify-between receipt-total">
@@ -184,9 +190,9 @@ const ReceiptPrint = ({
 
         {/* Footer */}
         <div className="text-center text-xs mt-4">
-          <p>Terima kasih atas kunjungan Anda!</p>
+          <p>{s.receipt.footer || 'Terima kasih atas kunjungan Anda!'}</p>
           <p>Barang yang sudah dibeli tidak dapat dikembalikan</p>
-          <p className="mt-2">www.smartpos.co.id</p>
+          <p className="mt-2">{headerName.toLowerCase().replace(/\s+/g, '')}.id</p>
         </div>
       </div>
     </>

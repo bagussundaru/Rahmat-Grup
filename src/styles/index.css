@@ -10,3 +10,43 @@ body {
   font-family: inherit;
   margin: unset;
 }
+@keyframes spin-slow {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.animate-spin-slow {
+  animation: spin-slow 12s linear infinite;
+}
+.container-responsive {
+  width: 100%;
+  max-width: 1200px;
+  margin: 0 auto;
+  padding: 0 12px;
+}
+
+.hide-on-mobile {
+  display: none;
+}
+
+@media (min-width: 768px) {
+  .hide-on-mobile {
+    display: block;
+  }
+}
+:root {
+  --pos-primary: #1e40af;
+  --pos-accent: #10b981;
+  --pos-secondary-bg: #f3f4f6;
+}
+
+.card-gradient {
+  background: linear-gradient(135deg, rgba(30,64,175,0.08), rgba(16,185,129,0.08));
+}
+
+.btn-rounded {
+  border-radius: 10px;
+}
+
+.zebra-table tr:nth-child(odd) { background-color: rgba(243,244,246,0.6); }
+.zebra-table tr:hover { background-color: rgba(30,64,175,0.08); }

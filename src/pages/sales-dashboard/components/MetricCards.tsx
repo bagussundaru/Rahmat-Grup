@@ -48,7 +48,7 @@ const MetricCards = ({ metrics }: MetricCardsProps) => {
       {metrics.map((metric) => (
         <div
           key={metric.id}
-          className="bg-card border border-border rounded-lg p-6 hover:shadow-elevation-2 transition-shadow duration-150"
+          className="card-gradient border border-border rounded-xl p-6 hover:shadow-elevation-2 transition-shadow duration-150"
         >
           <div className="flex items-center justify-between mb-4">
             <div className={`w-12 h-12 rounded-lg flex items-center justify-center ${metric.color}`}>

@@ -37,6 +37,19 @@ const StatusIndicatorBar = ({ className = '', onStatusClick }: StatusIndicatorBa
     return () => clearInterval(interval);
   }, []);
 
+  useEffect(() => {
+    const updateOnline = () => {
+      setSystemStatus(prev => ({ ...prev, network: navigator.onLine ? 'connected' : 'disconnected' }));
+    };
+    updateOnline();
+    window.addEventListener('online', updateOnline);
+    window.addEventListener('offline', updateOnline);
+    return () => {
+      window.removeEventListener('online', updateOnline);
+      window.removeEventListener('offline', updateOnline);
+    };
+  }, []);
+
   const getStatusColor = (status: string) => {
     switch (status) {
       case 'connected': case'synced':
@@ -66,13 +79,14 @@ const StatusIndicatorBar = ({ className = '', onStatusClick }: StatusIndicatorBa
   };
 
   const getStatusLabel = (type: keyof SystemStatus, status: string) => {
-    const labels = {
+    const labels: Record<'barcode' | 'printer' | 'network' | 'sync', Record<string, string>> = {
       barcode: { connected: 'Scanner Aktif', disconnected: 'Scanner Terputus', error: 'Scanner Error' },
       printer: { connected: 'Printer Siap', disconnected: 'Printer Terputus', error: 'Printer Error' },
       network: { connected: 'Online', disconnected: 'Offline', slow: 'Koneksi Lambat' },
       sync: { synced: 'Data Tersinkron', syncing: 'Sinkronisasi...', error: 'Sync Error' }
     };
-    return labels[type][status as keyof typeof labels[typeof type]] || status;
+    const group = labels[type as 'barcode' | 'printer' | 'network' | 'sync'];
+    return (group && group[status]) || status;
   };
 
   const formatLastSync = (date: Date) => {

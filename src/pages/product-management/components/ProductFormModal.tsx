@@ -39,7 +39,8 @@ const ProductFormModal = ({
     isActive: true
   });
 
-  const [errors, setErrors] = useState<Partial<ProductFormData>>({});
+  type ProductFormErrors = Partial<Record<keyof ProductFormData, string>>;
+  const [errors, setErrors] = useState<ProductFormErrors>({});
   const [barcodeInput, setBarcodeInput] = useState<BarcodeInput>({ value: '', timestamp: 0 });
   const [isScanning, setIsScanning] = useState(false);
   const barcodeTimeoutRef = useRef<NodeJS.Timeout>();
@@ -128,7 +129,7 @@ const ProductFormModal = ({
   }));
 
   const validateForm = (): boolean => {
-    const newErrors: Partial<ProductFormData> = {};
+    const newErrors: ProductFormErrors = {};
 
     if (!formData.name.trim()) newErrors.name = 'Nama produk wajib diisi';
     if (!formData.sku.trim()) newErrors.sku = 'SKU wajib diisi';

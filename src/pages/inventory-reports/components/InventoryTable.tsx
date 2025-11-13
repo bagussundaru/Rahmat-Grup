@@ -81,7 +81,7 @@ const InventoryTable = ({
   return (
     <div className="bg-card rounded-lg border border-border overflow-hidden">
       <div className="overflow-x-auto">
-        <table className="w-full">
+        <table className="w-full zebra-table">
           <thead className="bg-muted/50 border-b border-border">
             <tr>
               <th className="p-3 text-left">

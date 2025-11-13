@@ -150,7 +150,7 @@ const ProductSearch = ({ products, onAddToCart, onBarcodeScanned }: ProductSearc
   };
 
   return (
-    <div className="bg-card border border-border rounded-lg p-4 h-full flex flex-col">
+    <div className="bg-card border border-border rounded-lg p-3 md:p-4 h-full flex flex-col">
       {/* Enhanced Header with Scanner Status */}
       <div className="flex items-center justify-between mb-4">
         <div className="flex items-center space-x-2">
@@ -175,7 +175,7 @@ const ProductSearch = ({ products, onAddToCart, onBarcodeScanned }: ProductSearc
 
       {/* Enhanced Search Input */}
       <div className="space-y-3 mb-4">
-        <div className="flex space-x-2">
+        <div className="flex flex-col sm:flex-row sm:space-x-2 space-y-2 sm:space-y-0">
           <div className="flex-1 relative">
             <Input
               ref={inputRef}
@@ -196,7 +196,7 @@ const ProductSearch = ({ products, onAddToCart, onBarcodeScanned }: ProductSearc
             variant={isManualScanMode ? "default" : "outline"}
             iconName="Scan"
             onClick={toggleScanMode}
-            className={isManualScanMode ? 'bg-primary text-primary-foreground' : ''}
+            className={`${isManualScanMode ? 'bg-primary text-primary-foreground' : ''} w-full sm:w-auto`}
           >
             {isManualScanMode ? 'Scan ON' : 'Scan'}
           </Button>
@@ -206,6 +206,7 @@ const ProductSearch = ({ products, onAddToCart, onBarcodeScanned }: ProductSearc
             iconName="Search"
             onClick={handleManualBarcodeScan}
             disabled={!searchTerm.trim()}
+            className="w-full sm:w-auto"
           >
             Cari
           </Button>

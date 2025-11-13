@@ -18,7 +18,7 @@ const RahmatLogo: React.FC<RahmatLogoProps> = ({
         height={size} 
         viewBox="0 0 200 200" 
         xmlns="http://www.w3.org/2000/svg"
-        className="flex-shrink-0"
+        className="flex-shrink-0 animate-spin-slow"
       >
         {/* Background circle */}
         <circle cx="100" cy="100" r="95" fill="#3B82F6" stroke="#1E40AF" strokeWidth="2"/>
@@ -63,8 +63,7 @@ const RahmatLogo: React.FC<RahmatLogoProps> = ({
       
       {showText && (
         <div className="flex flex-col">
-          <span className="font-bold text-lg text-blue-600">Kasir</span>
-          <span className="text-xs text-blue-500">Rahmat Grup</span>
+          <span className="font-bold text-lg text-foreground">Kasir Rahmat Grup</span>
         </div>
       )}
     </div>

@@ -261,7 +261,7 @@ const SalesDashboard = () => {
         onToggleCollapse={() => setSidebarCollapsed(!sidebarCollapsed)}
         currentUser={{
           name: 'Manager Toko',
-          role: 'Administrator'
+          role: 'owner'
         }} />
 
 

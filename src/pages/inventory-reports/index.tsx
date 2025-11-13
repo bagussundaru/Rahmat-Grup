@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { showToast } from '../../utils/notify';
 import NavigationSidebar from '../../components/ui/NavigationSidebar';
 import NavigationBreadcrumbs from '../../components/ui/NavigationBreadcrumbs';
 import QuickActionToolbar from '../../components/ui/QuickActionToolbar';
@@ -245,6 +246,10 @@ const InventoryReports = () => {
     return filtered;
   }, [mockProducts, filters, sortConfig]);
 
+  useEffect(() => {
+    (window as any).__INVENTORY_PRODUCTS__ = filteredProducts;
+  }, [filteredProducts]);
+
   // Calculate summary
   const inventorySummary: InventorySummary = useMemo(() => {
     return {
@@ -302,7 +307,7 @@ const InventoryReports = () => {
   const handleExport = (options: ExportOptions) => {
     console.log('Exporting with options:', options);
     // Implement export logic here
-    alert(`Export ${options.format.toUpperCase()} berhasil! Data akan diunduh dalam beberapa saat.`);
+    showToast(`Export ${options.format.toUpperCase()} dimulai`, 'info');
   };
 
   const handleCreatePurchaseOrder = (productId: string) => {
@@ -329,10 +334,11 @@ const InventoryReports = () => {
           <div className="mb-6">
             <NavigationBreadcrumbs
               customBreadcrumbs={[
-              { label: 'Dashboard', href: '/' },
-              { label: 'Laporan', href: '/reports' },
-              { label: 'Inventori' }]
-              } />
+                { label: 'Dashboard', path: '/' },
+                { label: 'Laporan', path: '/reports' },
+                { label: 'Inventori', path: '/inventory-reports', isActive: true }
+              ]}
+            />
 
             <div className="flex items-center justify-between mt-4">
               <div>
@@ -342,8 +348,9 @@ const InventoryReports = () => {
               <div className="flex items-center space-x-4">
                 <QuickActionToolbar
                   customActions={[
-                  { id: 'refresh', label: 'Refresh', icon: 'RefreshCw', onClick: () => window.location.reload() }]
-                  } />
+                    { label: 'Refresh', icon: 'RefreshCw', onClick: () => window.location.reload(), variant: 'outline', shortcut: 'F5' }
+                  ]}
+                />
 
                 <ExportControls
                   onExport={handleExport}
@@ -410,16 +417,14 @@ const InventoryReports = () => {
           {activeTab === 'movements' &&
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <InventoryTable
-                products={filteredProducts}
-                onSort={setSortConfig}
-                sortConfig={sortConfig}
-                onProductSelect={handleProductSelect}
-                selectedProducts={selectedProducts} />
-
+                <StockMovementHistory movements={mockMovements} />
+              
               </div>
               <div>
-                <StockMovementHistory movements={mockMovements} />
+                <ReorderRecommendations
+                  recommendations={mockRecommendations.filter(r => r.currentStock <= r.reorderPoint)}
+                  onCreatePurchaseOrder={handleCreatePurchaseOrder}
+                />
               </div>
             </div>
           }
@@ -427,19 +432,15 @@ const InventoryReports = () => {
           {activeTab === 'recommendations' &&
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
               <div className="lg:col-span-2">
-                <InventoryTable
-                products={filteredProducts}
-                onSort={setSortConfig}
-                sortConfig={sortConfig}
-                onProductSelect={handleProductSelect}
-                selectedProducts={selectedProducts} />
-
+                <ReorderRecommendations
+                  recommendations={mockRecommendations}
+                  onCreatePurchaseOrder={handleCreatePurchaseOrder}
+                />
+              
               </div>
               <div>
-                <ReorderRecommendations
-                recommendations={mockRecommendations}
-                onCreatePurchaseOrder={handleCreatePurchaseOrder} />
-
+                <CategoryDistributionChart data={categoryDistribution} />
+              
               </div>
             </div>
           }

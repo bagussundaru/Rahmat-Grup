@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { getSettings } from '../../../utils/settings';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Icon from "components/ui/AppIcon";
@@ -23,6 +24,10 @@ const PaymentPanel = ({
   const [cashAmount, setCashAmount] = useState<string>('');
   const [change, setChange] = useState<number>(0);
 
+  const settings = getSettings();
+  const taxRate = 0; // retail: no tax
+  const discountPercent = settings.discountPercent ?? 0;
+
   const formatCurrency = (amount: number) => {
     return new Intl.NumberFormat('id-ID', {
       style: 'currency',
@@ -31,19 +36,24 @@ const PaymentPanel = ({
     }).format(amount);
   };
 
+  const discountAmount = Math.floor(total * (discountPercent / 100));
+  const taxableBase = Math.max(0, total - discountAmount);
+  const taxAmount = 0;
+  const grandTotal = taxableBase + taxAmount;
+
   const handleCashAmountChange = (value: string) => {
     setCashAmount(value);
     const numericValue = parseFloat(value) || 0;
-    setChange(Math.max(0, numericValue - total));
+    setChange(Math.max(0, numericValue - grandTotal));
   };
 
   const handleCashPayment = () => {
     const cashValue = parseFloat(cashAmount) || 0;
-    if (cashValue >= total) {
+    if (cashValue >= grandTotal) {
       onProcessPayment({
         method: 'cash',
         cashAmount: cashValue,
-        change: cashValue - total,
+        change: cashValue - grandTotal,
         isProcessing: false
       });
     }
@@ -64,19 +74,33 @@ const PaymentPanel = ({
     { label: '50K', value: 50000 },
     { label: '100K', value: 100000 },
     { label: '200K', value: 200000 },
-    { label: 'Pas', value: total }
+    { label: 'Pas', value: grandTotal }
   ];
 
-  const isValidCashAmount = parseFloat(cashAmount) >= total;
+  const isValidCashAmount = parseFloat(cashAmount) >= grandTotal;
 
   return (
     <div className="bg-card border border-border rounded-lg p-4 h-full flex flex-col">
       {/* Header */}
       <div className="mb-4">
         <h2 className="text-lg font-semibold text-foreground mb-2">Pembayaran</h2>
-        <div className="bg-primary/10 rounded-lg p-3">
-          <p className="text-sm text-muted-foreground">Total Pembayaran</p>
-          <p className="text-2xl font-bold text-primary">{formatCurrency(total)}</p>
+        <div className="bg-primary/10 rounded-lg p-3 space-y-1">
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Subtotal</span>
+            <span className="font-semibold">{formatCurrency(total)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Diskon ({discountPercent}%)</span>
+            <span className="font-semibold">-{formatCurrency(discountAmount)}</span>
+          </div>
+          <div className="flex justify-between text-sm">
+            <span className="text-muted-foreground">Pajak (0%)</span>
+            <span className="font-semibold">{formatCurrency(0)}</span>
+          </div>
+          <div className="flex justify-between items-center">
+            <p className="text-sm text-muted-foreground">Total Pembayaran</p>
+            <p className="text-2xl font-bold text-primary">{formatCurrency(grandTotal)}</p>
+          </div>
         </div>
       </div>
 

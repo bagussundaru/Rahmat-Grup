@@ -25,8 +25,10 @@ const QRISModal = ({
   useEffect(() => {
     if (isOpen) {
       // Generate QRIS data
+      const formatAmount = (amt: number) => amt.toFixed(2);
+      const payload = `0002010102125204000053033605802ID5914RAHMAT GRUP6007JAKARTA540${formatAmount(amount)}621303Transaction`; // simplified payload representation
       const qrisPayment: QRISPayment = {
-        qrCode: `00020101021226580014ID.CO.QRIS.WWW0215ID20232024567890303UMI51440014ID.CO.QRIS.WWW0215ID20232024567890303UMI5204481253033605802ID5914SMARTPOS STORE6007JAKARTA61051234062070703A0163044B7A`,
+        qrCode: payload,
         amount: amount,
         merchantId: "ID20232024567890",
         transactionId: transactionId
@@ -99,19 +101,9 @@ const QRISModal = ({
 
           {/* QR Code */}
           <div className="bg-white p-4 rounded-lg mb-6 inline-block">
-            <div className="w-48 h-48 bg-gray-100 flex items-center justify-center rounded-lg">
-              {/* QR Code placeholder - in real implementation, use a QR code library */}
-              <div className="grid grid-cols-8 gap-1">
-                {Array.from({ length: 64 }, (_, i) => (
-                  <div
-                    key={i}
-                    className={`w-2 h-2 ${
-                      Math.random() > 0.5 ? 'bg-black' : 'bg-white'
-                    }`}
-                  />
-                ))}
-              </div>
-            </div>
+          <div className="w-48 h-48 bg-white flex items-center justify-center rounded-lg">
+            <Icon name="QrCode" size={128} className="text-foreground" />
+          </div>
           </div>
 
           {/* Instructions */}

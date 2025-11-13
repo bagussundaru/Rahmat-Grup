@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
+import { showToast } from '../../utils/notify';
 import NavigationSidebar from '../../components/ui/NavigationSidebar';
 import NavigationBreadcrumbs from '../../components/ui/NavigationBreadcrumbs';
 import QuickActionToolbar from '../../components/ui/QuickActionToolbar';
@@ -28,7 +29,7 @@ const TransactionHistoryPage = () => {
   // Mock current user
   const currentUser = {
     name: 'Ahmad Rizki',
-    role: 'admin',
+    role: 'admin' as const,
     avatar: 'https://randomuser.me/api/portraits/men/32.jpg'
   };
 
@@ -357,22 +358,26 @@ const TransactionHistoryPage = () => {
 
     // Sort transactions
     filtered.sort((a, b) => {
-      let aValue = a[sortConfig.field];
-      let bValue = b[sortConfig.field];
-      
+      let aValue: unknown = a[sortConfig.field];
+      let bValue: unknown = b[sortConfig.field];
+
       if (sortConfig.field === 'date') {
         aValue = new Date(aValue as Date).getTime();
         bValue = new Date(bValue as Date).getTime();
       }
-      
-      if (typeof aValue === 'string') {
+
+      if (typeof aValue === 'string' && typeof bValue === 'string') {
         aValue = aValue.toLowerCase();
-        bValue = (bValue as string).toLowerCase();
+        bValue = bValue.toLowerCase();
       }
-      
-      if (aValue < bValue) return sortConfig.direction === 'asc' ? -1 : 1;
-      if (aValue > bValue) return sortConfig.direction === 'asc' ? 1 : -1;
-      return 0;
+
+      if (aValue === bValue) return 0;
+      if (aValue == null) return 1;
+      if (bValue == null) return -1;
+
+      return (aValue as any) < (bValue as any)
+        ? (sortConfig.direction === 'asc' ? -1 : 1)
+        : (sortConfig.direction === 'asc' ? 1 : -1);
     });
 
     return filtered;
@@ -443,18 +448,23 @@ const TransactionHistoryPage = () => {
   };
 
   const handleExport = async (options: ExportOptions) => {
-    console.log('Exporting with options:', options);
-    // In real app, this would generate and download the file
-    
-    // Simulate export process
-    await new Promise(resolve => setTimeout(resolve, 2000));
-    
-    // Create mock download
-    const blob = new Blob(['Mock export data'], { type: 'text/plain' });
+    const headers = ['ID','Date','Time','TransactionID','Total','Method','Cashier','Status'];
+    const rows = filteredAndSortedTransactions.map(t => [
+      t.id,
+      t.date.toISOString().split('T')[0],
+      t.time,
+      t.transactionId,
+      t.totalAmount,
+      t.paymentMethod,
+      t.cashier,
+      t.status,
+    ]);
+    const csv = [headers.join(',')].concat(rows.map(r => r.join(','))).join('\n');
+    const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
     const url = URL.createObjectURL(blob);
     const a = document.createElement('a');
     a.href = url;
-    a.download = `transactions-export-${new Date().toISOString().split('T')[0]}.${options.format === 'excel' ? 'xlsx' : 'pdf'}`;
+    a.download = `transactions-${new Date().toISOString().slice(0,10)}.csv`;
     document.body.appendChild(a);
     a.click();
     document.body.removeChild(a);
@@ -463,9 +473,9 @@ const TransactionHistoryPage = () => {
 
   const handleRefresh = async () => {
     setIsRefreshing(true);
-    // Simulate data refresh
     await new Promise(resolve => setTimeout(resolve, 1000));
     setIsRefreshing(false);
+    showToast('Data transaksi diperbarui', 'success');
   };
 
   const resetFilters = () => {
@@ -519,8 +529,8 @@ const TransactionHistoryPage = () => {
             <div className="flex items-center justify-between">
               <div>
                 <NavigationBreadcrumbs customBreadcrumbs={[
-                  { label: 'Dashboard', href: '/' },
-                  { label: 'Riwayat Transaksi', href: '/transactions' }
+                  { label: 'Dashboard', path: '/' },
+                  { label: 'Riwayat Transaksi', path: '/transactions', isActive: true }
                 ]} />
                 <div className="mt-2">
                   <h1 className="text-2xl font-bold text-foreground">Riwayat Transaksi</h1>
